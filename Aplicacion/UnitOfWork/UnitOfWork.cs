@@ -102,6 +102,17 @@ namespace Aplicacion.UnitOfWork
             }
         }
 
+        public IProveedor Proveedores
+        {
+            get{
+                if(_proveedores == null)
+                {
+                    _proveedores = new ProveedorRepository(context);
+                }
+            return _proveedores;
+            }
+        }
+
         public IRaza Razas
         {
             get{

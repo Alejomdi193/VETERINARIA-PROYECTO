@@ -10,8 +10,12 @@ namespace Aplicacion.Repository
 {
     public class EspecieRepository : GenericRepository<Especie>, IEspecie
     {
+        private VeterinariaContext context;
         public EspecieRepository(VeterinariaContext context) : base(context)
         {
+            this.context = context;
         }
+
+
     }
 }

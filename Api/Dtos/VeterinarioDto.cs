@@ -7,6 +7,7 @@ namespace Api.Dtos
 {
     public class VeterinarioDto
     {
+        public int Id {get; set;}
         public string Nombre {get; set;}
         public string Correo {get; set;}
         public int Telefono {get; set;}

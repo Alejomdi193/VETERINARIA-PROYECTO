@@ -14,6 +14,7 @@ namespace Dominio.Interface
         IMedicamento Medicamentos{get;}
         IMovimiento Movimientos {get;}
         IPropietario Propietarios {get;}
+        IProveedor Proveedores {get;} 
         IRaza Razas {get;}
         ITipoMovimiento TipoMovimientos {get;}
         ITratamientoMedico TratamientoMedicos {get;}

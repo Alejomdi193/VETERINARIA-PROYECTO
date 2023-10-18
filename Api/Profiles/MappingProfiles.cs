@@ -22,7 +22,7 @@ namespace Api.Profiles
             CreateMap<Proveedor,ProveedorDto>().ReverseMap();
             CreateMap<Raza,RazaDto>().ReverseMap();
             CreateMap<TipoMovimiento,TipoMovimientoDto>().ReverseMap();
-            CreateMap<TratamientoMedico,TratamientoMedico>().ReverseMap();
+            CreateMap<TratamientoMedico,TratamientoMedicoDto>().ReverseMap();
             CreateMap<Veterinario,VeterinarioDto>().ReverseMap();
         }
     }
