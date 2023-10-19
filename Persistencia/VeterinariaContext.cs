@@ -28,6 +28,8 @@ public class VeterinariaContext : DbContext
     public DbSet<TipoMovimiento> TipoMovimientos { get; set; }
     public DbSet<TratamientoMedico> TratamientoMedicos { get; set; }
     public DbSet<Veterinario> Veterinarios { get; set; }
+        public DbSet<Rol> Roles { get; set; }
+            public DbSet<Usuario> Usuarios { get; set; }
 
  
     protected override void OnModelCreating (ModelBuilder modelBuilder)

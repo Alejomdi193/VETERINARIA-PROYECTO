@@ -5,5 +5,6 @@ namespace Dominio.Interface
     public interface IMedicamento : IGeneric<Medicamento>
     {
         Task<IEnumerable<Medicamento>> MedicamentoGenfar();
+        Task<IEnumerable<Medicamento>> VentaMayor();
     }
 }

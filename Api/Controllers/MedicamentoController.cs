@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Dtos;
+using Api.Helpers;
 using Aplicacion.UnitOfWork;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+[Authorize]
     public class MedicamentoController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -23,6 +28,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -47,6 +53,17 @@ namespace Api.Controllers
             return mapper.Map<MedicamentoDto>(medicamento);
         }
 
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<MedicamentoDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Medicamentos.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<MedicamentoDto>>(entidad.registros);
+            return new Pager<MedicamentoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        }
+
         [HttpGet("Genfar")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,6 +71,20 @@ namespace Api.Controllers
         public async Task<ActionResult<IEnumerable<MedicamentoDto>>> Get2()
         {
             var medicamento = await unitOfWork.Medicamentos.MedicamentoGenfar();
+            if( medicamento == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<MedicamentoDto>>(medicamento);
+        }
+
+        [HttpGet("50000")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<ActionResult<IEnumerable<MedicamentoDto>>> Get5()
+        {
+            var medicamento = await unitOfWork.Medicamentos.VentaMayor();
             if( medicamento == null)
             {
                 return NotFound();

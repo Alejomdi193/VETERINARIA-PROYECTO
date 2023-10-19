@@ -1,5 +1,6 @@
 
 using Api.Dtos;
+using Api.Helpers;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
@@ -21,6 +22,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -32,6 +34,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
+        
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -43,7 +46,17 @@ namespace Api.Controllers
                 return NotFound();
             }
             return mapper.Map<VeterinarioDto>(veterinario);
-        }  
+        } 
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<VeterinarioDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Veterinarios.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<VeterinarioDto>>(entidad.registros);
+            return new Pager<VeterinarioDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        } 
 
         [HttpGet("cirujanoespecialidad")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -74,6 +87,24 @@ namespace Api.Controllers
             unitOfWork.Veterinarios.Update(veterinario);
             await unitOfWork.SaveAsync();
             return veterinarioDto;
+        } 
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult<Veterinario>> Post(VeterinarioDto veterinarioDto)
+        {
+            var veterinario = mapper.Map<Veterinario>(veterinarioDto);
+            unitOfWork.Veterinarios.Add(veterinario);
+            await unitOfWork.SaveAsync();
+            if (veterinario== null)
+            {
+                return BadRequest();
+            }
+
+            veterinario.Id = veterinario.Id;
+            return CreatedAtAction(nameof(Post), new { id = veterinario.Id }, veterinarioDto);
         } 
 
         [HttpDelete("{id}")]

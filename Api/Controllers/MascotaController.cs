@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Dtos;
+using Api.Helpers;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+[Authorize]
     public class MascotaController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -22,6 +27,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -46,6 +52,16 @@ namespace Api.Controllers
             }
             return mapper.Map<MascotaDto>(mascota);
         }
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<MascotaDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Mascotas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<MascotaDto>>(entidad.registros);
+            return new Pager<MascotaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        }
 
 
         [HttpGet("razaFelina")]
@@ -53,7 +69,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public async Task<ActionResult<MascotaDto>> Get3()
+        public async Task<ActionResult<IEnumerable<Object>>> Get3()
         {
             var mascota = await unitOfWork.Mascotas.ObtenerRazaFelina();
 
@@ -61,7 +77,50 @@ namespace Api.Controllers
             {
                 return NotFound();
             }
-            return mapper.Map<MascotaDto>(mascota);
+            return mapper.Map<List<Object>>(mascota);
+        }
+
+        [HttpGet("propietarioMascota")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<ActionResult<IEnumerable<MascotaDto>>> Get4()
+        {
+            var mascotas = await unitOfWork.Mascotas.PropietarioMascota();
+            if (mascotas == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<MascotaDto>>(mascotas);
+        }
+
+        [HttpGet("mascotaxEspecie/{nombre}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<ActionResult<IEnumerable<Object>>> Get7(string nombre)
+        {
+            var mascotas = await unitOfWork.Mascotas.MascotaEspecie(nombre);
+            if (mascotas == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<Object>>(mascotas);
+        }
+
+
+        [HttpGet("mascotaPropietario")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<ActionResult<IEnumerable<MascotaDto>>> Get11()
+        {
+            var mascotas = await unitOfWork.Mascotas.MascotaPropietario();
+            if (mascotas == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<MascotaDto>>(mascotas);
         }
 
 

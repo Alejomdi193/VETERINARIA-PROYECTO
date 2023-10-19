@@ -1,11 +1,16 @@
 using Api.Dtos;
+using Api.Helpers;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+[Authorize]
     public class RazaController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -18,6 +23,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,6 +48,16 @@ namespace Api.Controllers
             }
             return mapper.Map<RazaDto>(raza);
         }  
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<RazaDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Razas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<RazaDto>>(entidad.registros);
+            return new Pager<RazaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]

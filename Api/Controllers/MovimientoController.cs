@@ -3,12 +3,18 @@ using Dominio.Entidades;
 using Dominio.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Api.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Api.Helpers;
 
 namespace Api.Controllers
 {
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+[Authorize]
 
     public class MovimientoController : BaseApiController
     {
+        
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
@@ -19,6 +25,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -41,6 +48,16 @@ namespace Api.Controllers
                 return NotFound();
             }
             return mapper.Map<MovimientoDto>(movimiento);
+        }
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<MovimientoDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Movimientos.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<MovimientoDto>>(entidad.registros);
+            return new Pager<MovimientoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
         }
 
         [HttpPost]

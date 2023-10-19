@@ -1,14 +1,18 @@
 using Api.Dtos;
+using Api.Helpers;
 using Aplicacion.UnitOfWork;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
-
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+[Authorize]
     public class EspecieController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -21,9 +25,9 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
         public async Task<ActionResult<IEnumerable<EspecieDto>>> Get()
         {
             var especie = await unitOfWork.Especies.GetAllAsync();
@@ -42,6 +46,17 @@ namespace Api.Controllers
                 return NotFound();
             }
             return mapper.Map<EspecieDto>(especie);
+        }
+
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<EspecieDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Especies.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<EspecieDto>>(entidad.registros);
+            return new Pager<EspecieDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
         }
 
         [HttpPost]

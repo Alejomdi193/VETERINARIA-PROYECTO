@@ -11,7 +11,7 @@ using Persistencia;
 namespace Persistencia.Data.Migrations
 {
     [DbContext(typeof(VeterinariaContext))]
-    [Migration("20231017194928_CreateMig")]
+    [Migration("20231019074227_CreateMig")]
     partial class CreateMig
     {
         /// <inheritdoc />
@@ -307,6 +307,66 @@ namespace Persistencia.Data.Migrations
                     b.ToTable("Razas");
                 });
 
+            modelBuilder.Entity("Dominio.Entidades.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("IdUsuarioFk")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdUsuarioFk");
+
+                    b.ToTable("RefreshToken");
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Rol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar")
+                        .HasColumnName("rolName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("rol", (string)null);
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.RolUsuario", b =>
+                {
+                    b.Property<int>("IdUsuarioFk")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdRolFk")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdUsuarioFk", "IdRolFk");
+
+                    b.HasIndex("IdRolFk");
+
+                    b.ToTable("userRol", (string)null);
+                });
+
             modelBuilder.Entity("Dominio.Entidades.TipoMovimiento", b =>
                 {
                     b.Property<int>("Id")
@@ -359,6 +419,33 @@ namespace Persistencia.Data.Migrations
                     b.HasIndex("IdMedicamentoFk");
 
                     b.ToTable("TratamientoMedicos");
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("nombre");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("usuario", (string)null);
                 });
 
             modelBuilder.Entity("Dominio.Entidades.Veterinario", b =>
@@ -504,6 +591,36 @@ namespace Persistencia.Data.Migrations
                     b.Navigation("Especie");
                 });
 
+            modelBuilder.Entity("Dominio.Entidades.RefreshToken", b =>
+                {
+                    b.HasOne("Dominio.Entidades.Usuario", "Usuario")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("IdUsuarioFk")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.RolUsuario", b =>
+                {
+                    b.HasOne("Dominio.Entidades.Rol", "Rol")
+                        .WithMany("RolUsuarios")
+                        .HasForeignKey("IdRolFk")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Dominio.Entidades.Usuario", "Usuario")
+                        .WithMany("RolUsuarios")
+                        .HasForeignKey("IdUsuarioFk")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Rol");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("Dominio.Entidades.TratamientoMedico", b =>
                 {
                     b.HasOne("Dominio.Entidades.Cita", "Cita")
@@ -572,9 +689,21 @@ namespace Persistencia.Data.Migrations
                     b.Navigation("Mascotas");
                 });
 
+            modelBuilder.Entity("Dominio.Entidades.Rol", b =>
+                {
+                    b.Navigation("RolUsuarios");
+                });
+
             modelBuilder.Entity("Dominio.Entidades.TipoMovimiento", b =>
                 {
                     b.Navigation("Movimientos");
+                });
+
+            modelBuilder.Entity("Dominio.Entidades.Usuario", b =>
+                {
+                    b.Navigation("RefreshTokens");
+
+                    b.Navigation("RolUsuarios");
                 });
 
             modelBuilder.Entity("Dominio.Entidades.Veterinario", b =>

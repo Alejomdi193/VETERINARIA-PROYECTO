@@ -19,7 +19,8 @@ namespace Dominio.Interface
         ITipoMovimiento TipoMovimientos {get;}
         ITratamientoMedico TratamientoMedicos {get;}
         IVeterinario Veterinarios {get;}
-
+        IRol Roles { get; }
+        IUsuario Usuarios { get; }
         Task SaveAsync();
     }
 }

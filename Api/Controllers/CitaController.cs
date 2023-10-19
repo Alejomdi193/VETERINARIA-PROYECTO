@@ -1,14 +1,19 @@
 using Api.Dtos;
+using Api.Helpers;
+using Aplicacion.UnitOfWork;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
-
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+[Authorize]
     public class CitaController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -21,6 +26,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -29,6 +35,7 @@ namespace Api.Controllers
             var cita = await unitOfWork.Citas.GetAllAsync();
             return mapper.Map<List<CitaDto>>(cita);
         }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -44,6 +51,49 @@ namespace Api.Controllers
             }
             return mapper.Map<CitaDto>(cita);
         }
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<CitaDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Citas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<CitaDto>>(entidad.registros);
+            return new Pager<CitaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        }
+
+        [HttpGet("animalvacunado")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult<IEnumerable<CitaDto>>> Get6()
+        {
+            var citas = await unitOfWork.Citas.ObtenerAnimales();
+
+            if (citas == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<CitaDto>>(citas);
+        }
+
+        [HttpGet("citaAnimal/{nombre}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult<IEnumerable<CitaDto>>> Get9(string nombre)
+        {
+            var citas = await unitOfWork.Citas.AnimalVeterinario(nombre);
+
+            if (citas == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<CitaDto>>(citas);
+        }
+
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]

@@ -29,5 +29,27 @@ namespace Aplicacion.Repository
 
             return tratamientoMedico;
         }
+
+        public override async Task<(int totalRegistros, IEnumerable<TratamientoMedico> registros)> GetAllAsync(int pageIndex, int pageSize, int search)
+        {
+        var query = context.TratamientoMedicos as IQueryable<TratamientoMedico>;
+
+        if (search != 0)
+        {
+            query = query.Where(p => p.IdCitasFk == search);
+            query = query.Where(p => p.IdMedicamentoFk == search);
+        }
+
+        query = query.OrderBy(p => p.Id);
+        var totalRegistros = await query.CountAsync();
+        var registros = await query
+            .Include(p => p.Medicamento)
+            .Include(p => p.Cita)
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (totalRegistros, registros);
+    }
     }
 }

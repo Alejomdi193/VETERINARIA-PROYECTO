@@ -25,5 +25,26 @@ namespace Aplicacion.Repository
 
             return raza;
         }
+
+        public override async Task<(int totalRegistros, IEnumerable<Raza> registros)> GetAllAsync(int pageIndex, int pageSize, int search)
+        {
+        var query = context.Razas as IQueryable<Raza>;
+
+        if (search != 0)
+        {
+            query = query.Where(p => p.IdEspecieFk == search);
+
+        }
+
+        query = query.OrderBy(p => p.Id);
+        var totalRegistros = await query.CountAsync();
+        var registros = await query
+            .Include(p => p.Especie)
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (totalRegistros, registros);
+    }
     }
 }
