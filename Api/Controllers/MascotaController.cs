@@ -47,6 +47,24 @@ namespace Api.Controllers
             return mapper.Map<MascotaDto>(mascota);
         }
 
+
+        [HttpGet("razaFelina")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult<MascotaDto>> Get3()
+        {
+            var mascota = await unitOfWork.Mascotas.ObtenerRazaFelina();
+
+            if(mascota == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<MascotaDto>(mascota);
+        }
+
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -11,19 +11,29 @@ namespace Aplicacion.Repository
 {
     public class MascotaRepository : GenericRepository<Mascota>, IMascota
     {
-        private VeterinariaContext _context;
+        private  readonly VeterinariaContext context;
         public MascotaRepository(VeterinariaContext context) : base(context)
         {
-            _context=context;
+            this.context=context;
         }
 
        
         public override async Task<IEnumerable<Mascota>> GetAllAsync()
         {
-            var mascota =  await _context.Mascotas
+            var mascota =  await context.Mascotas
             .Include(t=>t.Propietario)
             .Include(e=>e.Raza)
             .ThenInclude(p => p.Especie)
+            .ToListAsync();
+
+            return mascota;
+        }
+
+        public async Task<IEnumerable<Mascota>> ObtenerRazaFelina()
+        {
+            var mascota = await context.Mascotas
+            .Include(p => p.Raza).ThenInclude(p => p.Especie)
+            .Where(p => p.Raza.Nombre == "Felina")
             .ToListAsync();
 
             return mascota;
