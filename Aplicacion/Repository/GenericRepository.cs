@@ -71,7 +71,17 @@ namespace Aplicacion.Repository
         throw new NotImplementedException();
     }
 
-    public virtual void Remove(T entity)
+        public Task<T> GetByRefreshTokenAsync(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> GetByUsernameAsync(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void Remove(T entity)
     {
         _context.Set<T>().Remove(entity);
     }
@@ -86,5 +96,7 @@ namespace Aplicacion.Repository
         _context.Set<T>()
             .Update(entity);
     }
+
+
 }
 }

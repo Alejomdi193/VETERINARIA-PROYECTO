@@ -48,8 +48,8 @@ namespace Api.Extensions;
                     new RateLimitRule
                     {
                         Endpoint = "*",
-                        Period = "30s",
-                        Limit = 5
+                        Period = "10s",
+                        Limit = 1
                     }
                 };
             }

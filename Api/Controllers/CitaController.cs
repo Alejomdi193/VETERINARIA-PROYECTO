@@ -4,16 +4,15 @@ using Aplicacion.UnitOfWork;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
-[ApiVersion("1.0")]
-[ApiVersion("1.1")]
-[Authorize]
+    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
+
     public class CitaController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -21,27 +20,22 @@ namespace Api.Controllers
 
         public CitaController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this.unitOfWork= unitOfWork;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
-
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
-        public async Task<ActionResult<IEnumerable<CitaDto>>> Get()
+        public async Task<ActionResult<IEnumerable<CitaDto>>> GetAll()
         {
             var cita = await unitOfWork.Citas.GetAllAsync();
             return mapper.Map<List<CitaDto>>(cita);
         }
 
-
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
-        public async Task<ActionResult<CitaDto>> Get(int id)
+        public async Task<ActionResult<CitaDto>> GetById(int id)
         {
             var cita = await unitOfWork.Citas.GetByIdAsync(id);
 
@@ -51,8 +45,8 @@ namespace Api.Controllers
             }
             return mapper.Map<CitaDto>(cita);
         }
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<CitaDto>>> GetPagination([FromQuery] Params paisParams)
@@ -61,6 +55,7 @@ namespace Api.Controllers
             var listEntidad = mapper.Map<List<CitaDto>>(entidad.registros);
             return new Pager<CitaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
         }
+
 
         [HttpGet("animalvacunado")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -104,12 +99,12 @@ namespace Api.Controllers
             var cita = mapper.Map<Cita>(citaDto);
             unitOfWork.Citas.Add(cita);
             await unitOfWork.SaveAsync();
-            if(cita == null)
+            if (cita == null)
             {
                 return BadRequest();
             }
             cita.Id = cita.Id;
-            return CreatedAtAction(nameof(Post), new {id = citaDto.Id},citaDto);
+            return CreatedAtAction(nameof(Post), new { id = citaDto.Id }, citaDto);
 
         }
 
@@ -120,14 +115,14 @@ namespace Api.Controllers
 
         public async Task<ActionResult<CitaDto>> Put(int id, [FromBody] CitaDto citaDto)
         {
-            if(citaDto == null)
+            if (citaDto == null)
             {
                 return BadRequest();
             }
-        var cita = mapper.Map<Cita>(citaDto);
-        unitOfWork.Citas.Update(cita);
-        await unitOfWork.SaveAsync();
-        return citaDto;
+            var cita = mapper.Map<Cita>(citaDto);
+            unitOfWork.Citas.Update(cita);
+            await unitOfWork.SaveAsync();
+            return citaDto;
         }
 
         [HttpDelete("{id}")]
@@ -146,7 +141,7 @@ namespace Api.Controllers
             return NoContent();
         }
 
-        
+
 
 
     }

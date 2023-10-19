@@ -18,6 +18,7 @@ builder.Services.ConfigureApiVersioning();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.ConfigureCors();
 builder.Services.AddAplicationServices();
+builder.Services.AddAuthentication();
 builder.Services.AddDbContext<VeterinariaContext>(options => 
     {
         string  ConnectionStrings= builder.Configuration.GetConnectionString("ConexMySql");
@@ -39,6 +40,7 @@ app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 
 app.UseIpRateLimiting();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

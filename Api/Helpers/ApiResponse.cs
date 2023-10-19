@@ -23,7 +23,7 @@ public class ApiResponse
             401 => "Usuario no autorizado.",
             404 => "El recurso que has intentado solicitar no existe.",
             405 => "Este método HTTP no está permitido en el servidor.",
-            500 => "Error en el servidor. No eres tú, soy yo. Comunícate con el administrador XD.",
+            500 => "Error en el servidor.",
             _ => throw new NotImplementedException()
         };
     }
