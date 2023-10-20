@@ -28,6 +28,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -52,14 +53,15 @@ namespace Api.Controllers
             }
             return mapper.Map<MascotaDto>(mascota);
         }
-        [HttpGet("pagination")]
+        [HttpGet("1.1")]
+        [MapToApiVersion("1.1")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<MascotaDto>>> GetPagination([FromQuery] Params paisParams)
+        public async Task<ActionResult<Pager<MascotaDto>>> GetPagination([FromQuery] Params mascotaParams)
         {
-            var entidad = await unitOfWork.Mascotas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var entidad = await unitOfWork.Mascotas.GetAllAsync(mascotaParams.PageIndex, mascotaParams.PageSize, mascotaParams.Search);
             var listEntidad = mapper.Map<List<MascotaDto>>(entidad.registros);
-            return new Pager<MascotaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            return new Pager<MascotaDto>(listEntidad, entidad.totalRegistros, mascotaParams.PageIndex, mascotaParams.PageSize, mascotaParams.Search);
         }
 
         //Consulta 3

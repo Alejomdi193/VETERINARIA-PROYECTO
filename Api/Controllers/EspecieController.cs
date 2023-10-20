@@ -25,6 +25,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<EspecieDto>>> Get()
@@ -47,14 +48,15 @@ namespace Api.Controllers
             return mapper.Map<EspecieDto>(especie);
         }
 
-        [HttpGet("pagination")]
+        [HttpGet("1.1")]
+        [MapToApiVersion("1.1")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<EspecieDto>>> GetPagination([FromQuery] Params paisParams)
+        public async Task<ActionResult<Pager<EspecieDto>>> GetPagination([FromQuery] Params especieParams)
         {
-            var entidad = await unitOfWork.Especies.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var entidad = await unitOfWork.Especies.GetAllAsync(especieParams.PageIndex, especieParams.PageSize, especieParams.Search);
             var listEntidad = mapper.Map<List<EspecieDto>>(entidad.registros);
-            return new Pager<EspecieDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            return new Pager<EspecieDto>(listEntidad, entidad.totalRegistros, especieParams.PageIndex, especieParams.PageSize, especieParams.Search);
         }
 
         [HttpPost]

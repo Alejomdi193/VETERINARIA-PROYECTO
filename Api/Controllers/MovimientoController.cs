@@ -26,6 +26,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,14 +63,15 @@ namespace Api.Controllers
             
             return Ok(movimiento);
         }
-        [HttpGet("pagination")]
+        [HttpGet("1.1")]
+        [MapToApiVersion("1.1")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<MovimientoDto>>> GetPagination([FromQuery] Params paisParams)
+        public async Task<ActionResult<Pager<MovimientoDto>>> GetPagination([FromQuery] Params movimientoParams)
         {
-            var entidad = await unitOfWork.Movimientos.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var entidad = await unitOfWork.Movimientos.GetAllAsync(movimientoParams.PageIndex, movimientoParams.PageSize, movimientoParams.Search);
             var listEntidad = mapper.Map<List<MovimientoDto>>(entidad.registros);
-            return new Pager<MovimientoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            return new Pager<MovimientoDto>(listEntidad, entidad.totalRegistros, movimientoParams.PageIndex, movimientoParams.PageSize, movimientoParams.Search);
         }
 
         [HttpPost]

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Dominio.Entidades;
 using Dominio.Interface;
@@ -25,6 +26,19 @@ namespace Aplicacion.Repository
 
             return raza;
         }
+        public async Task<IEnumerable<object>> CantidadXRaza()
+        {
+            var raza = await context.Razas
+                .Select(p => new
+                {
+                    Raza = p.Nombre,
+                    Cantidadraza = p.Mascotas.Count
+
+                })
+                .ToListAsync();
+
+                return raza;
+        } 
 
         public override async Task<(int totalRegistros, IEnumerable<Raza> registros)> GetAllAsync(int pageIndex, int pageSize, int search)
         {
@@ -35,6 +49,8 @@ namespace Aplicacion.Repository
             query = query.Where(p => p.IdEspecieFk == search);
 
         }
+
+        
 
         query = query.OrderBy(p => p.Id);
         var totalRegistros = await query.CountAsync();

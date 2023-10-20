@@ -24,6 +24,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,14 +49,29 @@ namespace Api.Controllers
             }
             return mapper.Map<RazaDto>(raza);
         }  
-        [HttpGet("pagination")]
+
+        [HttpGet("mascotaxRaza")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<RazaDto>>> GetPagination([FromQuery] Params paisParams)
+
+        public async Task<ActionResult<object>> Get12()
         {
-            var entidad = await unitOfWork.Razas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var raza = await unitOfWork.Razas.CantidadXRaza();
+            if (raza == null)
+            {
+                return NotFound();
+            }
+            return Ok(raza);
+        }  
+        [HttpGet("1.1")]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<RazaDto>>> GetPagination([FromQuery] Params razaParams)
+        {
+            var entidad = await unitOfWork.Razas.GetAllAsync(razaParams.PageIndex, razaParams.PageSize, razaParams.Search);
             var listEntidad = mapper.Map<List<RazaDto>>(entidad.registros);
-            return new Pager<RazaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            return new Pager<RazaDto>(listEntidad, entidad.totalRegistros, razaParams.PageIndex, razaParams.PageSize, razaParams.Search);
         }
 
         [HttpPost]

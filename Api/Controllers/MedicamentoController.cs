@@ -29,6 +29,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,14 +54,15 @@ namespace Api.Controllers
             return mapper.Map<MedicamentoDto>(medicamento);
         }
 
-        [HttpGet("pagination")]
+        [HttpGet("1.1")]
+        [MapToApiVersion("1.1")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<MedicamentoDto>>> GetPagination([FromQuery] Params paisParams)
+        public async Task<ActionResult<Pager<MedicamentoDto>>> GetPagination([FromQuery] Params medicamentoParams)
         {
-            var entidad = await unitOfWork.Medicamentos.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var entidad = await unitOfWork.Medicamentos.GetAllAsync(medicamentoParams.PageIndex, medicamentoParams.PageSize, medicamentoParams.Search);
             var listEntidad = mapper.Map<List<MedicamentoDto>>(entidad.registros);
-            return new Pager<MedicamentoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            return new Pager<MedicamentoDto>(listEntidad, entidad.totalRegistros, medicamentoParams.PageIndex, medicamentoParams.PageSize, medicamentoParams.Search);
         }
 
         // Consulta 2

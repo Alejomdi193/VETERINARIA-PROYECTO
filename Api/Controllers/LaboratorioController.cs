@@ -61,14 +61,15 @@ namespace Api.Controllers
             }
             return mapper.Map<LaboratorioDto>(laboratorio);
         }
-        [HttpGet("pagination")]
+        [HttpGet("1.1")]
+        [MapToApiVersion("1.1")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<LaboratorioDto>>> GetPagination([FromQuery] Params paisParams)
+        public async Task<ActionResult<Pager<LaboratorioDto>>> GetPagination([FromQuery] Params laboratorioParams)
         {
-            var entidad = await unitOfWork.Laboratorios.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var entidad = await unitOfWork.Laboratorios.GetAllAsync(laboratorioParams.PageIndex, laboratorioParams.PageSize, laboratorioParams.Search);
             var listEntidad = mapper.Map<List<LaboratorioDto>>(entidad.registros);
-            return new Pager<LaboratorioDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            return new Pager<LaboratorioDto>(listEntidad, entidad.totalRegistros, laboratorioParams.PageIndex, laboratorioParams.PageSize, laboratorioParams.Search);
         }
 
         [HttpPost]
