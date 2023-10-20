@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Api.Dtos;
 using Api.Helpers;
 using AutoMapper;
+using Api.Helpers.Errors;
 using Dominio.Entidades;
 using Dominio.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +19,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
+
     public class LaboratorioController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -60,8 +61,7 @@ namespace Api.Controllers
             }
             return mapper.Map<LaboratorioDto>(laboratorio);
         }
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<LaboratorioDto>>> GetPagination([FromQuery] Params paisParams)

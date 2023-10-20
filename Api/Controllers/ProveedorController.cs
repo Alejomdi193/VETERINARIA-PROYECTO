@@ -8,6 +8,7 @@ using Api.Helpers;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Api.Helpers.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,8 +17,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
-   
+
     public class ProveedorController : BaseApiController
 
     {
@@ -31,7 +31,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,9 +53,22 @@ namespace Api.Controllers
                 return NotFound();
             }
             return mapper.Map<ProveedorDto>(proveedor);
-        }   
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+        }  
+
+        [HttpGet("proveedorxMedicamento/{nombre}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<ActionResult<IEnumerable<ProveedorDto>>> Get10(string nombre)
+        {
+            var proveedor = await unitOfWork.Proveedores.ProveedoresxMedicamento(nombre);
+            if (proveedor == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<List<ProveedorDto>>(proveedor);
+        }  
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<ProveedorDto>>> GetPagination([FromQuery] Params paisParams)

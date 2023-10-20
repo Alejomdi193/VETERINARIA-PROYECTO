@@ -1,10 +1,11 @@
 using Api.Dtos;
-using Api.Helpers;
+using Api.Helpers.Errors;
 using Aplicacion.UnitOfWork;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Api.Helpers;
 
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +24,17 @@ namespace Api.Controllers
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
+        // [HttpGet]
+        // [MapToApiVersion("1.0")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // public async Task<ActionResult<IEnumerable<CitaDto>>> GetAll()
+        // {
+        //     var cita = await unitOfWork.Citas.GetAllAsync();
+        //     return mapper.Map<List<CitaDto>>(cita);
+        // }
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<CitaDto>>> GetAll()
@@ -31,6 +42,18 @@ namespace Api.Controllers
             var cita = await unitOfWork.Citas.GetAllAsync();
             return mapper.Map<List<CitaDto>>(cita);
         }
+
+        [HttpGet]
+        [MapToApiVersion("1.1")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<CitaDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.Citas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<CitaDto>>(entidad.registros);
+            return new Pager<CitaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -46,17 +69,9 @@ namespace Api.Controllers
             return mapper.Map<CitaDto>(cita);
         }
 
-        [HttpGet("pagination")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<CitaDto>>> GetPagination([FromQuery] Params paisParams)
-        {
-            var entidad = await unitOfWork.Citas.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
-            var listEntidad = mapper.Map<List<CitaDto>>(entidad.registros);
-            return new Pager<CitaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
-        }
 
 
+        //Consulta 6
         [HttpGet("animalvacunado")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,21 +88,22 @@ namespace Api.Controllers
             return mapper.Map<List<CitaDto>>(citas);
         }
 
-        [HttpGet("citaAnimal/{nombre}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //Consulta 8 
+        // [HttpGet("citaAnimal/{nombre}")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public async Task<ActionResult<IEnumerable<CitaDto>>> Get9(string nombre)
-        {
-            var citas = await unitOfWork.Citas.AnimalVeterinario(nombre);
+        // public async Task<ActionResult<IEnumerable<CitaDto>>> Get9(string nombre)
+        // {
+        //     var citas = await unitOfWork.Citas.AnimalVeterinario(nombre);
 
-            if (citas == null)
-            {
-                return NotFound();
-            }
-            return mapper.Map<List<CitaDto>>(citas);
-        }
+        //     if (citas == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //     return mapper.Map<List<CitaDto>>(citas);
+        // }
 
 
         [HttpPost]

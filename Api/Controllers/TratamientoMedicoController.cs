@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.Dtos;
 using Api.Helpers;
+using Api.Helpers.Errors;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
@@ -16,7 +17,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
+
 
     public class TratamientoMedicoController : BaseApiController
     {
@@ -30,7 +31,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -55,6 +55,16 @@ namespace Api.Controllers
             return mapper.Map<TratamientoMedicoDto>(tratamientoMedico);
         }  
 
+        [HttpGet("pagination")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Pager<TratamientoMedicoDto>>> GetPagination([FromQuery] Params paisParams)
+        {
+            var entidad = await unitOfWork.TratamientoMedicos.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+            var listEntidad = mapper.Map<List<TratamientoMedicoDto>>(entidad.registros);
+            return new Pager<TratamientoMedicoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
+        }
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,16 +83,6 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(Post), new { id = tratamientoMedico.Id }, tratamientoMedicoDto);
         } 
 
-        [HttpGet]
-        [MapToApiVersion("1.1")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Pager<TratamientoMedicoDto>>> GetPagination([FromQuery] Params paisParams)
-        {
-            var entidad = await unitOfWork.TratamientoMedicos.GetAllAsync(paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
-            var listEntidad = mapper.Map<List<TratamientoMedicoDto>>(entidad.registros);
-            return new Pager<TratamientoMedicoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
-        }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status201Created)]

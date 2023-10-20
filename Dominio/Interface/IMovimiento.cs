@@ -8,6 +8,6 @@ namespace Dominio.Interface
 {
     public interface IMovimiento : IGeneric<Movimiento>
     {
-        
+        Task<IEnumerable<object>> MedicamentoxVendedor();
     }
 }

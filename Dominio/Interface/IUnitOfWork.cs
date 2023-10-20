@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dominio.Interfaces;
 
 namespace Dominio.Interface
 {
@@ -20,7 +21,7 @@ namespace Dominio.Interface
         ITratamientoMedico TratamientoMedicos {get;}
         IVeterinario Veterinarios {get;}
         IRol Roles { get; }
-        IUsuario Usuarios { get; }
-        Task SaveAsync();
+        IUserRepository Usuarios { get; }
+        Task<int> SaveAsync();
     }
 }

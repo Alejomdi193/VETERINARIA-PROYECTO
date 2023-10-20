@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Api.Dtos;
 using Api.Helpers;
 using Aplicacion.UnitOfWork;
+using Api.Helpers.Errors;
 using AutoMapper;
 using Dominio.Entidades;
 using Dominio.Interface;
@@ -15,7 +16,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
+
     public class MedicamentoController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -28,7 +29,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,8 +53,7 @@ namespace Api.Controllers
             return mapper.Map<MedicamentoDto>(medicamento);
         }
 
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<MedicamentoDto>>> GetPagination([FromQuery] Params paisParams)
@@ -64,6 +63,7 @@ namespace Api.Controllers
             return new Pager<MedicamentoDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
         }
 
+        // Consulta 2
         [HttpGet("Genfar")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -77,6 +77,7 @@ namespace Api.Controllers
             }
             return mapper.Map<List<MedicamentoDto>>(medicamento);
         }
+        //Consulta 5
 
         [HttpGet("50000")]
         [ProducesResponseType(StatusCodes.Status200OK)]

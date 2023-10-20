@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Api.Dtos;
 using Api.Helpers;
 using AutoMapper;
+using Api.Helpers.Errors;
 using Dominio.Entidades;
 using Dominio.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
+
     public class MascotaController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -27,7 +28,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -52,8 +52,7 @@ namespace Api.Controllers
             }
             return mapper.Map<MascotaDto>(mascota);
         }
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<MascotaDto>>> GetPagination([FromQuery] Params paisParams)
@@ -63,6 +62,7 @@ namespace Api.Controllers
             return new Pager<MascotaDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
         }
 
+        //Consulta 3
 
         [HttpGet("razaFelina")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -80,6 +80,7 @@ namespace Api.Controllers
             return mapper.Map<List<Object>>(mascota);
         }
 
+        // Consulta 4
         [HttpGet("propietarioMascota")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,6 +95,7 @@ namespace Api.Controllers
             return mapper.Map<List<MascotaDto>>(mascotas);
         }
 
+        //Consulta 7
         [HttpGet("mascotaxEspecie/{nombre}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -108,7 +110,7 @@ namespace Api.Controllers
             return mapper.Map<List<Object>>(mascotas);
         }
 
-
+        //Consulta 11
         [HttpGet("mascotaPropietario")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

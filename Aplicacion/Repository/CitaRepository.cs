@@ -60,6 +60,8 @@ namespace Aplicacion.Repository
             return cita;
         }
 
+        
+
         public override async Task<(int totalRegistros, IEnumerable<Cita> registros)> GetAllAsync(int pageIndex, int pageSize, int search)
         {
         var query = context.Citas as IQueryable<Cita>;
@@ -67,7 +69,6 @@ namespace Aplicacion.Repository
         if (search != 0)
         {
             query = query.Where(p => p.IdVeterinarioFk == search);
-            query = query.Where(p => p.IdMascotaFk == search);
         }
 
         query = query.OrderBy(p => p.Id);
@@ -81,5 +82,6 @@ namespace Aplicacion.Repository
 
         return (totalRegistros, registros);
     }
+   
     }
 }

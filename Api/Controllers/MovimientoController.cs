@@ -3,6 +3,7 @@ using Dominio.Entidades;
 using Dominio.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Api.Dtos;
+using Api.Helpers.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Api.Helpers;
 
@@ -10,7 +11,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
+
 
     public class MovimientoController : BaseApiController
     {
@@ -25,7 +26,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,8 +49,20 @@ namespace Api.Controllers
             }
             return mapper.Map<MovimientoDto>(movimiento);
         }
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+
+
+        [HttpGet("MedicamentoxVendedor")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public async Task<ActionResult<IEnumerable<object>>> Get8()
+        {
+            var movimiento = await unitOfWork.Movimientos.MedicamentoxVendedor();
+
+            
+            return Ok(movimiento);
+        }
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<MovimientoDto>>> GetPagination([FromQuery] Params paisParams)

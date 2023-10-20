@@ -102,13 +102,16 @@ namespace Aplicacion.Repository
         {
             query = query.Where(p => p.IdPropietarioFk == search);
             query = query.Where(p => p.IdRazaFk == search);
+            query = query.Include(p => p.Propietario);
+            query = query.Include(p => p.Raza);
+
         }
 
         query = query.OrderBy(p => p.Id);
         var totalRegistros = await query.CountAsync();
         var registros = await query
-            .Include(p => p.Raza)
             .Include(p => p.Propietario)
+            .Include(p => p.Raza)
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

@@ -15,8 +15,6 @@ namespace Dominio.Interface;
         void RemoveRange(IEnumerable<T> entities);
         void Update(T entity);
 
-        Task<T> GetByUsernameAsync(string username);
-        Task<T> GetByRefreshTokenAsync(string username);
         
     }
 

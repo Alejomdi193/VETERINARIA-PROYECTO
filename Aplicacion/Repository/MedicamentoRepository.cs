@@ -21,6 +21,7 @@ namespace Aplicacion.Repository
         {
             var medicamento = await context.Medicamentos
             .Where(p => p.Laboratorio.Nombre == "Genfar")
+            .Include(p => p.Laboratorio)
             .ToListAsync();
 
             return medicamento;

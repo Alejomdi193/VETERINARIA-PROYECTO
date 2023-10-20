@@ -1,5 +1,5 @@
 using Api.Dtos;
-using Api.Helpers;
+using Api.Helpers.Errors;
 using Aplicacion.UnitOfWork;
 using AutoMapper;
 using Dominio.Entidades;
@@ -12,7 +12,7 @@ namespace Api.Controllers
 {
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-[Authorize]
+
     public class EspecieController : BaseApiController
     {
         private readonly IUnitOfWork unitOfWork;
@@ -25,7 +25,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<IEnumerable<EspecieDto>>> Get()
@@ -48,8 +47,7 @@ namespace Api.Controllers
             return mapper.Map<EspecieDto>(especie);
         }
 
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<EspecieDto>>> GetPagination([FromQuery] Params paisParams)

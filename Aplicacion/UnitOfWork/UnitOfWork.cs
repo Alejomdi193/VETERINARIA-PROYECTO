@@ -1,6 +1,7 @@
 using Aplicacion.Repository;
 using Dominio.Entidades;
 using Dominio.Interface;
+using Dominio.Interfaces;
 using Persistencia;
 
 namespace Aplicacion.UnitOfWork
@@ -26,7 +27,7 @@ namespace Aplicacion.UnitOfWork
         public IVeterinario _veterinarios;
         public IProveedor _proveedores;
         public IRol _roles;
-        public IUsuario _usuarios;
+        public IUserRepository _usuarios;
 
         public IRol Roles 
         {
@@ -39,7 +40,7 @@ namespace Aplicacion.UnitOfWork
             }
         }
 
-        public IUsuario Usuarios
+        public IUserRepository Usuarios
         {
             get{
                 if(_usuarios == null)
@@ -190,9 +191,9 @@ namespace Aplicacion.UnitOfWork
             return context.SaveChanges();
         }
 
-        public Task SaveAsync()
+        public async Task<int> SaveAsync()
         {
-            throw new NotImplementedException();
+            return await context.SaveChangesAsync();
         }
     }
 }

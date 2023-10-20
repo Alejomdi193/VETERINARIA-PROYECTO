@@ -2,6 +2,7 @@
 using Api.Dtos;
 using Api.Helpers;
 using AutoMapper;
+using Api.Helpers.Errors;
 using Dominio.Entidades;
 using Dominio.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
+
 
     public class VeterinarioController : BaseApiController
     {
@@ -22,7 +26,6 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,7 +37,6 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -47,8 +49,7 @@ namespace Api.Controllers
             }
             return mapper.Map<VeterinarioDto>(veterinario);
         } 
-        [HttpGet]
-        [MapToApiVersion("1.1")]
+        [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Pager<VeterinarioDto>>> GetPagination([FromQuery] Params paisParams)
@@ -57,6 +58,8 @@ namespace Api.Controllers
             var listEntidad = mapper.Map<List<VeterinarioDto>>(entidad.registros);
             return new Pager<VeterinarioDto>(listEntidad, entidad.totalRegistros, paisParams.PageIndex, paisParams.PageSize, paisParams.Search);
         } 
+
+        //Consulta 1
 
         [HttpGet("cirujanoespecialidad")]
         [ProducesResponseType(StatusCodes.Status200OK)]

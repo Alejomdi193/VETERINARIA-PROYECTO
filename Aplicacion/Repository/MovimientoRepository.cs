@@ -26,6 +26,26 @@ namespace Aplicacion.Repository
             return movimiento;
         }
 
+        public async Task<IEnumerable<object>> MedicamentoxVendedor()
+        {
+            var movimiento = await context.Movimientos
+            .Include(p => p.MovimientoMedicamentos)
+            .ThenInclude(p => p.Medicamento)
+            .ToListAsync();
+
+            var resultado = movimiento.Select(m =>
+            new 
+            {
+                IdMovimiento = m.Id,
+                Cantida = m.Cantidad,
+                Preci = m.Precio,
+                ValorTotal = m.Cantidad * m.Precio,
+                Medicamento = m.MovimientoMedicamentos.Select(m => m.Medicamento.Nombre)
+            });
+
+            return resultado;
+        }
+
         public override async Task<(int totalRegistros, IEnumerable<Movimiento> registros)> GetAllAsync(int pageIndex, int pageSize, int search)
         {
         var query = context.Movimientos as IQueryable<Movimiento>;

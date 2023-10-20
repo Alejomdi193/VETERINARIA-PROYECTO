@@ -60,6 +60,7 @@ namespace Aplicacion.Repository
 
         return (totalRegistros, registros);
     }
+    
 
         public virtual async Task<T> GetByIdAsync(int id)
     {
@@ -70,11 +71,6 @@ namespace Aplicacion.Repository
     {
         throw new NotImplementedException();
     }
-
-        public Task<T> GetByRefreshTokenAsync(string username)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<T> GetByUsernameAsync(string username)
         {
